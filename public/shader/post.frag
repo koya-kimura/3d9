@@ -104,7 +104,8 @@ vec4 getRegionInfo(int uiIndex, int regionIndex) {
     // UI 0: テスト用 - 2つの領域（通常とモノクロ）
     if(uiIndex == 0) {
         if(regionIndex == 0) {
-            return vec4(0.5, 0.5, 1.0, 0.0); // 中央、通常
+            float scl = 0.8;
+            return vec4(1.0 - scl * 0.5 - 0.03 * u_resolution.y / u_resolution.x, 1.0 - scl * 0.5 - 0.03, scl, 0.0); // 中央、通常
         }
     }
     // UI 1: 従来の1領域

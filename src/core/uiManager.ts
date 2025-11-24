@@ -1,95 +1,17 @@
 import p5 from "p5";
-import { DateText } from "../utils/dateText";
 import { Easing } from "../utils/easing";
 import { Logger } from "../utils/Logger";
+import { BaseUIDraw } from "../ui/BaseUIDraw";
+import { UIDrawTest } from "../ui/UIDrawTest";
+import { UIDraw01 } from "../ui/UIDraw01";
+import { UIDraw02 } from "../ui/UIDraw02";
+import { UIDraw03 } from "../ui/UIDraw03";
 
-type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger) => void;
-
-/**
- * UI描画関数その2（インデックス1）。
- * メインのビジュアルオーバーレイとして機能し、以下の要素を描画します：
- * 1. 中央にアーティスト名（TAKASHIMA & KIMURA）
- * 2. 上下に流れる「OVER!FLOW」のテキストアニメーション
- * 3. 右下に現在のBPMと日付・時刻
- * 4. ビートに合わせて動くインジケーター（矩形）
- * これらはすべてオフスクリーンキャンバス（tex）に描画され、
- * 最終的にメインキャンバスに合成されます。
- *
- * @param context 描画に必要なコンテキスト情報。
- */
-const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger): void => {
-    tex.push();
-    tex.textFont(font);
-
-    tex.rectMode(p.CENTER);
-    tex.stroke(255, 100);
-    tex.noFill();
-    tex.strokeWeight(5);
-    tex.rect(tex.width / 2, tex.height / 2, tex.width - 40, tex.height - 40, 5, 5);
-    tex.strokeWeight(2);
-    tex.rect(tex.width / 2, tex.height / 2, tex.width - 60, tex.height - 60, 5, 5);
-
-    tex.textAlign(p.RIGHT, p.BOTTOM);
-    tex.fill(255, 230);
-    tex.noStroke();
-    tex.textSize(Math.min(tex.width, tex.height) * 0.03);
-    tex.text("FPS: " + fps.toFixed(2), tex.width - 45, tex.height - 75);
-    tex.text(DateText.getYYYYMMDD_HHMMSS_format(), tex.width - 45, tex.height - 45);
-
-    tex.image(logo, 60, 60, Math.min(tex.width, tex.height) * 0.15, Math.min(tex.width, tex.height) * 0.15 * logo.height / logo.width);
-    tex.pop();
-}
-
-const UIDraw02: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger): void => {
-    tex.push();
-    tex.imageMode(p.CENTER);
-    tex.image(logo, tex.width / 2, tex.height / 2, Math.min(tex.width, tex.height) * 0.15, Math.min(tex.width, tex.height) * 0.15 * logo.height / logo.width);
-    tex.pop();
-}
-
-const UIDraw03: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger): void => {
-    tex.push();
-    tex.textFont(font);
-    tex.fill(255, 230);
-    tex.noStroke();
-
-    // タイトル
-    tex.textAlign(p.CENTER, p.TOP);
-    tex.textSize(Math.min(tex.width, tex.height) * 0.04);
-    tex.text("FPS LOG", tex.width / 2, 60);
-
-    // ログを取得して表示（最新5個）
-    const logs = logger.getRecentLogs(5);
-
-    tex.textAlign(p.LEFT, p.TOP);
-    tex.textSize(Math.min(tex.width, tex.height) * 0.025);
-
-    const startY = 140;
-    const lineHeight = Math.min(tex.width, tex.height) * 0.04;
-
-    logs.forEach((log: any, index: number) => {
-        const y = startY + index * lineHeight;
-        tex.text(`${log.time} - ${log.text}`, 80, y);
-    });
-
-    tex.pop();
-}
-
-const UIDrawTest: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger): void => {
-    tex.push();
-    tex.textFont(font);
-    tex.fill(255, 230);
-    tex.noStroke();
-    tex.text("TEST", tex.width / 2, tex.height / 2);
-    tex.pop();
-}
-
-
-const UIDRAWERS: readonly UIDrawFunction[] = [
-    UIDrawTest,
-    UIDraw01,
-    UIDraw02,
-    UIDraw03,
+const UIDRAWERS: readonly BaseUIDraw[] = [
+    new UIDrawTest(),
+    new UIDraw01(),
+    new UIDraw02(),
+    new UIDraw03(),
 ];
 
 // UIManager は単純なテキストオーバーレイの描画を担当する。
@@ -239,26 +161,32 @@ export class UIManager {
             this.currentProgress = 0.0;
         }
 
+
         if (this.isTransitioning) {
             // 遷移中：2つのUIを描画
             const currentDrawer = UIDRAWERS[this.currentUiIndex];
             const targetDrawer = UIDRAWERS[this.targetUiIndex];
 
+            // 各UIのupdateを呼び出す
+            currentDrawer.update(p, beat);
+            targetDrawer.update(p, beat);
+
             // 現在のUI（上にスライドアウト）
             texture.push();
             texture.translate(0, -progress * texture.height);
-            currentDrawer(p, texture, font, logo, this.fps, logger);
+            currentDrawer.draw(p, texture, font, logo, this.fps, logger, this);
             texture.pop();
 
             // 次のUI（下からスライドイン）
             texture.push();
             texture.translate(0, (1 - progress) * texture.height);
-            targetDrawer(p, texture, font, logo, this.fps, logger);
+            targetDrawer.draw(p, texture, font, logo, this.fps, logger, this);
             texture.pop();
         } else {
             // 通常：現在のUIのみ描画
             const drawer = UIDRAWERS[this.currentUiIndex];
-            drawer(p, texture, font, logo, this.fps, logger);
+            drawer.update(p, beat);
+            drawer.draw(p, texture, font, logo, this.fps, logger, this);
         }
 
         texture.pop();

@@ -138,7 +138,18 @@ export class TexManager {
         texture.pop(); // カメラ用のpop
 
         // 周りパート
-        if (this.objectShow[8]) this.outerFrameSphere.draw(p, texture, beat); // 見直す
+        if (this.objectShow[8]) this.outerFrameSphere.draw(p, texture, beat);
+
+        // デバッグ
+        texture.background(255);
+        texture.push();
+        texture.rotateX(beat * 0.1);
+        texture.rotateY(beat * 0.1);
+        texture.rotateZ(beat * 0.1);
+        texture.stroke(255);
+        texture.fill(255);
+        texture.box(100);
+        texture.pop();
 
         texture.pop(); // 最外層のpop
     }
