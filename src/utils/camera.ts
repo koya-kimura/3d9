@@ -28,9 +28,9 @@ const rotateYCameraPattern = (beat: number = 0): CameraParams => {
     return {
         x: 0,
         y: Math.sin(beat * 0.2) * 100,
-        z: -1000,
+        z: -1200,
         rotX: 0,
-        rotY: angleClamp(beat * 0.05),
+        rotY: angleClamp(-beat * 0.05 - GVM.leapRamp(beat, 32, 8, Easing.easeInOutSine) * Math.PI),
         rotZ: 0,
     };
 }
@@ -51,7 +51,8 @@ export type CameraPattern = CameraParams | ((beat: number) => CameraParams);
 
 // カメラパターン配列（静的値 or 関数）
 export const cameraPatterns: CameraPattern[] = [
-    { x: 0, y: -500, z: 0, rotX: 0, rotY: 0, rotZ: Math.PI * 0.5 },
+    { x: 0, y: -0, z: 350, rotX: Math.PI * 0.5, rotY: 0, rotZ: 0 },
+    { x: 0, y: -790, z: 0, rotX: 0, rotY: 0, rotZ: Math.PI * 0.5 },
     (beat: number) => rotateYCameraPattern(beat),
     { x: 0, y: 0, z: -400, rotX: Math.PI * 0.51, rotY: 0, rotZ: 0 },
     (beat: number) => rotateCameraPattern(beat),

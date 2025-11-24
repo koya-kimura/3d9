@@ -96,6 +96,7 @@ void main(void) {
     mosaicTex.g = random(mosaicUV + vec2(5.2, 1.3) + floor(u_beat)) * 0.5;
     mosaicTex.b = random(mosaicUV + vec2(9.4, 7.2) + floor(u_beat)) * 0.3 + 0.5;
 
+    // mainUV = mosaic(mainUV, u_resolution, 200.0);
     vec4 mainCol = texture2D(u_tex, mainUV);
 
     mainCol.rgb = mix3(mainCol.rgb, mosaicTex, pow(gray(mainCol.rgb) + 0.3, 3.0));
@@ -105,6 +106,10 @@ void main(void) {
     if(mainCol.a > 0.0){
         col.rgb = mainCol.rgb;
     }
+
+    // =============
+
+    col.rgb = (gray(col.rgb) > 0.0 ? 1.0 : 0.0) * vec3(1.0);
 
     // =============
 

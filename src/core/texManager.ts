@@ -48,6 +48,14 @@ export class TexManager {
         this.renderTexture = p.createGraphics(p.width, p.height, p.WEBGL);
         this.boxTexture = p.createGraphics(128, 128);
         this.cam = new Camera(p);
+
+        // boxTextureを一度だけ描画（キャッシュ）
+        this.boxTexture.clear();
+        this.boxTexture.background(0, 50);
+        this.boxTexture.strokeWeight(3);
+        this.boxTexture.stroke(0, 255, 0);
+        this.boxTexture.noFill();
+        this.boxTexture.circle(this.boxTexture.width / 2, this.boxTexture.height / 2, this.boxTexture.width);
     }
 
     getTexture(): p5.Graphics {
@@ -97,13 +105,6 @@ export class TexManager {
             throw new Error("Camera not initialized");
         }
 
-        this.boxTexture.clear();
-        this.boxTexture.background(0, 50);
-        this.boxTexture.strokeWeight(3);
-        this.boxTexture.stroke(0, 255, 0);
-        this.boxTexture.noFill();
-        this.boxTexture.circle(this.boxTexture.width / 2, this.boxTexture.height / 2, this.boxTexture.width);
-
         texture.push();
         texture.clear();
 
@@ -124,27 +125,35 @@ export class TexManager {
         this.groundCircle.draw(p, texture, beat);
         this.horizontalLines.draw(p, texture, beat);
 
-        texture.push();
-        // for (let i = 0; i < 30; i++) {
-        //     const angle = i * Math.PI * 2 / 30 + beat * 0.1;
-        //     const r = 500;
-        //     const x = Math.cos(angle) * r;
-        //     const z = Math.sin(angle) * r;
-        //     texture.push();
-        //     texture.translate(x, 0, z);
-        //     texture.noFill();
-        //     texture.strokeWeight(1);
-        //     texture.stroke(255);
-        //     texture.box(20);
-        //     texture.pop();
-        // }
+        for (let i = 0; i < 30; i++) {
+            const angle = i * Math.PI * 2 / 30 + beat * 0.1;
+            const r = 800;
+            const x = Math.cos(angle) * r;
+            const z = Math.sin(angle) * r;
+            texture.push();
+            texture.translate(x, 0, z);
+            texture.noStroke();
+            texture.fill(255, 100);
+            texture.rotateY(Math.PI);
+            texture.specularMaterial(100);
+            texture.torus(50, 5);
 
-        texture.pop();
+            texture.stroke(255, 100);
+            texture.strokeWeight(0.5);
+            texture.noFill();
+            texture.rotateZ(Math.PI * 0.5);
+            texture.rotateX(Math.PI * 0.55);
+            texture.rotateY(beat * 0.1);
+            texture.cylinder(40, 30);
+            texture.pop();
+        }
+
+        texture.pop(); // カメラ用のpop
 
         // 周りパート
         this.topBottomEllipses.draw(p, texture, beat);
         this.outerFrameBoxes.draw(p, texture, beat);
 
-        texture.pop();
+        texture.pop(); // 最外層のpop
     }
 }

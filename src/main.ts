@@ -65,7 +65,7 @@ const sketch = (p: p5) => {
   };
 
   // windowResized はウィンドウサイズ変更時にキャンバスとテクスチャをリサイズする。
-  p.windowResized = () => {
+  p.windowResized = (event?: UIEvent) => {
     p.resizeCanvas(p.windowWidth, p.windowHeight);
     texManager.resize(p);
     uiManager.resize(p);
