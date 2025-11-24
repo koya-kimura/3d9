@@ -75,8 +75,18 @@ const UIDraw03: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: 
     tex.pop();
 }
 
+const UIDrawTest: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger): void => {
+    tex.push();
+    tex.textFont(font);
+    tex.fill(255, 230);
+    tex.noStroke();
+    tex.text("TEST", tex.width / 2, tex.height / 2);
+    tex.pop();
+}
+
 
 const UIDRAWERS: readonly UIDrawFunction[] = [
+    UIDrawTest,
     UIDraw01,
     UIDraw02,
     UIDraw03,
