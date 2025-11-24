@@ -1,8 +1,9 @@
 import p5 from "p5";
 import { DateText } from "../utils/dateText";
 import { Easing } from "../utils/easing";
+import { Logger } from "../utils/Logger";
 
-type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number) => void;
+type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger) => void;
 
 /**
  * UI描画関数その2（インデックス1）。
@@ -16,7 +17,7 @@ type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, f
  *
  * @param context 描画に必要なコンテキスト情報。
  */
-const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number): void => {
+const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger): void => {
     tex.push();
     tex.textFont(font);
 
@@ -32,16 +33,45 @@ const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: 
     tex.fill(255, 230);
     tex.noStroke();
     tex.textSize(Math.min(tex.width, tex.height) * 0.03);
+    tex.text("FPS: " + fps.toFixed(2), tex.width - 45, tex.height - 75);
     tex.text(DateText.getYYYYMMDD_HHMMSS_format(), tex.width - 45, tex.height - 45);
 
     tex.image(logo, 60, 60, Math.min(tex.width, tex.height) * 0.15, Math.min(tex.width, tex.height) * 0.15 * logo.height / logo.width);
     tex.pop();
 }
 
-const UIDraw02: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number): void => {
+const UIDraw02: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger): void => {
     tex.push();
     tex.imageMode(p.CENTER);
     tex.image(logo, tex.width / 2, tex.height / 2, Math.min(tex.width, tex.height) * 0.15, Math.min(tex.width, tex.height) * 0.15 * logo.height / logo.width);
+    tex.pop();
+}
+
+const UIDraw03: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number, logger: Logger): void => {
+    tex.push();
+    tex.textFont(font);
+    tex.fill(255, 230);
+    tex.noStroke();
+
+    // タイトル
+    tex.textAlign(p.CENTER, p.TOP);
+    tex.textSize(Math.min(tex.width, tex.height) * 0.04);
+    tex.text("FPS LOG", tex.width / 2, 60);
+
+    // ログを取得して表示（最新5個）
+    const logs = logger.getRecentLogs(5);
+
+    tex.textAlign(p.LEFT, p.TOP);
+    tex.textSize(Math.min(tex.width, tex.height) * 0.025);
+
+    const startY = 140;
+    const lineHeight = Math.min(tex.width, tex.height) * 0.04;
+
+    logs.forEach((log: any, index: number) => {
+        const y = startY + index * lineHeight;
+        tex.text(`${log.time} - ${log.text}`, 80, y);
+    });
+
     tex.pop();
 }
 
@@ -49,12 +79,17 @@ const UIDraw02: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: 
 const UIDRAWERS: readonly UIDrawFunction[] = [
     UIDraw01,
     UIDraw02,
+    UIDraw03,
 ];
 
 // UIManager は単純なテキストオーバーレイの描画を担当する。
 export class UIManager {
     private renderTexture: p5.Graphics | undefined;
     private fps: number = 60.0;
+    private lastLogTime: number = 0; // 最後にログを記録した時刻
+
+    // Loggerインスタンス（5分保持）
+    private static logger: Logger = new Logger(5);
 
     // UI遷移の管理
     private currentUiIndex: number = 0;
@@ -137,6 +172,18 @@ export class UIManager {
         this.isTransitioning = true;
     }
 
+    update(p: p5, beat: number, logger: Logger): void {
+        // FPS計測
+        if (p.millis() % 300 < 20) this.fps = p.frameRate();
+
+        // 5秒ごとにFPSをログに記録
+        const now = p.millis();
+        if (now - this.lastLogTime >= 5000) {
+            logger.log(`FPS: ${this.fps.toFixed(2)}`);
+            this.lastLogTime = now;
+        }
+    }
+
     /**
      * UIの描画処理を実行します。
      * 遷移中は2つのUIを左右にスライドさせながら描画します。
@@ -146,14 +193,11 @@ export class UIManager {
      * @param logo ロゴ画像
      * @param beat 現在のビート値
      */
-    draw(p: p5, font: p5.Font, logo: p5.Image, beat: number): void {
+    draw(p: p5, font: p5.Font, logo: p5.Image, beat: number, logger: Logger): void {
         const texture = this.renderTexture;
         if (!texture) {
             throw new Error("Texture not initialized");
         }
-
-        // FPS計測
-        if (p.millis() % 300 < 20) this.fps = p.frameRate();
 
         texture.push();
         texture.clear();
@@ -180,18 +224,18 @@ export class UIManager {
             // 現在のUI（上にスライドアウト）
             texture.push();
             texture.translate(0, -progress * texture.height);
-            currentDrawer(p, texture, font, logo, this.fps);
+            currentDrawer(p, texture, font, logo, this.fps, logger);
             texture.pop();
 
             // 次のUI（下からスライドイン）
             texture.push();
             texture.translate(0, (1 - progress) * texture.height);
-            targetDrawer(p, texture, font, logo, this.fps);
+            targetDrawer(p, texture, font, logo, this.fps, logger);
             texture.pop();
         } else {
             // 通常：現在のUIのみ描画
             const drawer = UIDRAWERS[this.currentUiIndex];
-            drawer(p, texture, font, logo, this.fps);
+            drawer(p, texture, font, logo, this.fps, logger);
         }
 
         texture.pop();
