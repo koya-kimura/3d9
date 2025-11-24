@@ -1,5 +1,6 @@
 import p5 from "p5";
 import { DateText } from "../utils/dateText";
+import { Easing } from "../utils/easing";
 
 type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number) => void;
 
@@ -54,6 +55,13 @@ const UIDRAWERS: readonly UIDrawFunction[] = [
 export class UIManager {
     private renderTexture: p5.Graphics | undefined;
     private fps: number = 60.0;
+
+    // UI遷移の管理
+    private currentUiIndex: number = 0;
+    private targetUiIndex: number = 0;
+    private transitionStartBeat: number = 0;
+    private isTransitioning: boolean = false;
+    private beatPerTransition: number = 2.0; // 2拍でUI遷移
 
     /**
      * UIManagerクラスのコンストラクタです。
@@ -115,29 +123,76 @@ export class UIManager {
     }
 
     /**
+     * UIインデックスを変更し、スライド遷移を開始します。
+     * @param uiIndex - 遷移先のUIインデックス
+     * @param beat - 現在のビート値
+     */
+    pushUiIndex(uiIndex: number, beat: number): void {
+        if (uiIndex === this.targetUiIndex) {
+            return; // 同じUIへの遷移は無視
+        }
+        this.currentUiIndex = this.targetUiIndex;
+        this.targetUiIndex = uiIndex % UIDRAWERS.length;
+        this.transitionStartBeat = beat;
+        this.isTransitioning = true;
+    }
+
+    /**
      * UIの描画処理を実行します。
-     * 現在アクティブなUIパターン（UIDRAWERS配列内の関数）を選択し、
-     * 必要なリソース（テクスチャ、フォント、BPM情報など）を渡して実行します。
-     * 描画前にはテクスチャのクリアとpush/popによる状態保存を行い、
-     * 他の描画処理への影響を防ぎつつ、クリーンな状態でUIを描画します。
+     * 遷移中は2つのUIを左右にスライドさせながら描画します。
      *
      * @param p p5.jsのインスタンス。
      * @param font UI描画に使用するフォント。
+     * @param logo ロゴ画像
+     * @param beat 現在のビート値
      */
-    draw(p: p5, font: p5.Font, logo: p5.Image): void {
+    draw(p: p5, font: p5.Font, logo: p5.Image, beat: number): void {
         const texture = this.renderTexture;
         if (!texture) {
             throw new Error("Texture not initialized");
         }
 
-        // ---
+        // FPS計測
         if (p.millis() % 300 < 20) this.fps = p.frameRate();
-        // ---
 
         texture.push();
         texture.clear();
-        const drawer = UIDRAWERS[0];
-        drawer(p, texture, font, logo, this.fps);
+
+        // 遷移の進行度を計算
+        let progress = 0;
+        if (this.isTransitioning) {
+            const elapsedBeat = beat - this.transitionStartBeat;
+            const rawProgress = Math.min(elapsedBeat / this.beatPerTransition, 1.0);
+            progress = Easing.easeOutSine(rawProgress); // イージングを適用
+
+            if (rawProgress >= 1.0) {
+                // 遷移完了
+                this.isTransitioning = false;
+                this.currentUiIndex = this.targetUiIndex;
+            }
+        }
+
+        if (this.isTransitioning) {
+            // 遷移中：2つのUIを描画
+            const currentDrawer = UIDRAWERS[this.currentUiIndex];
+            const targetDrawer = UIDRAWERS[this.targetUiIndex];
+
+            // 現在のUI（上にスライドアウト）
+            texture.push();
+            texture.translate(0, -progress * texture.height);
+            currentDrawer(p, texture, font, logo, this.fps);
+            texture.pop();
+
+            // 次のUI（下からスライドイン）
+            texture.push();
+            texture.translate(0, (1 - progress) * texture.height);
+            targetDrawer(p, texture, font, logo, this.fps);
+            texture.pop();
+        } else {
+            // 通常：現在のUIのみ描画
+            const drawer = UIDRAWERS[this.currentUiIndex];
+            drawer(p, texture, font, logo, this.fps);
+        }
 
         texture.pop();
     }
