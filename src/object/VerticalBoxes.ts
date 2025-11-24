@@ -28,7 +28,7 @@ export class VerticalBoxes {
             const angle = beat * p.map(UniformRandom.rand(i, 1), 0, 1, 0.1, 0.3) + UniformRandom.rand(i) * Math.PI * 2.0;
             const x = p.cos(angle) * xr + (GVM.leapNoise(beat, 4, 1, Easing.easeInOutSine, i, 1) * 100 - 50);
             const z = p.sin(angle) * zr + (GVM.leapNoise(beat, 4, 1, Easing.easeInOutSine, i, 3) * 100 - 50);
-            const y = p.map(p.fract(beat * p.map(UniformRandom.rand(i, 2), 0, 1, 0.1, 0.2) + i * 0.006 + GVM.leapRamp(beat, 16, 4, Easing.easeInOutSine) * 0.5), 0, 1, this.Y_RANGE_MIN, this.Y_RANGE_MAX);
+            const y = p.map(p.fract(beat * p.map(UniformRandom.rand(i, 2), 0, 1, 0.05, 0.1) + i * 0.006 + GVM.leapRamp(beat, 16, 4, Easing.easeInOutSine) * 0.5), 0, 1, this.Y_RANGE_MIN, this.Y_RANGE_MAX);
             const h = UniformRandom.rand(i, 10) * p.map(Math.cos(beat * 0.02), -1, 1, 0.9, 1.1) * this.HEIGHT_VARIATION + this.HEIGHT_BASE;
 
             texture.push();

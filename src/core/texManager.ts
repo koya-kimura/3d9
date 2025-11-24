@@ -1,15 +1,16 @@
 import p5 from "p5";
 
-import { APCMiniMK2Manager } from "../midi/apcmini_mk2/APCMiniMK2Manager.js";
-import { Camera } from "../utils/camera.js";
-import { VerticalBoxes } from "../object/VerticalBoxes.js";
-import { GridBoxes } from "../object/GridBoxes.js";
-import { CircularBoxes } from "../object/CircularBoxes.js";
-import { SpiralBoxes } from "../object/SpiralBoxes.js";
-import { GroundCircle } from "../object/GroundCircle.js";
-import { HorizontalLines } from "../object/HorizontalLines.js";
-import { TopBottomEllipses } from "../object/TopBottomEllipses.js";
-import { OuterFrameBoxes } from "../object/OuterFrameBoxes.js";
+import { APCMiniMK2Manager } from "../midi/apcmini_mk2/APCMiniMK2Manager";
+import { Camera } from "../utils/camera";
+import { VerticalBoxes } from "../object/VerticalBoxes";
+import { GridBoxes } from "../object/GridBoxes";
+import { CircularBoxes } from "../object/CircularBoxes";
+import { SpiralBoxes } from "../object/SpiralBoxes";
+import { GroundCircle } from "../object/GroundCircle";
+import { HorizontalLines } from "../object/HorizontalLines";
+import { OuterFrameSphere } from "../object/OuterFrameSphere";
+import { OuterFrameBoxes } from "../object/OuterFrameBoxes";
+import { CircularTorusCylinders } from "../object/CircularTorusCylinders";
 
 export class TexManager {
     private renderTexture: p5.Graphics | null;
@@ -25,8 +26,10 @@ export class TexManager {
     private spiralBoxes: SpiralBoxes;
     private groundCircle: GroundCircle;
     private horizontalLines: HorizontalLines;
-    private topBottomEllipses: TopBottomEllipses;
+    private outerFrameSphere: OuterFrameSphere;
     private outerFrameBoxes: OuterFrameBoxes;
+    private circularTorusCylinders: CircularTorusCylinders;
+    private objectShow: boolean[] = Array.from({ length: 9 }, () => false);
 
     constructor() {
         this.renderTexture = null;
@@ -40,8 +43,9 @@ export class TexManager {
         this.spiralBoxes = new SpiralBoxes();
         this.groundCircle = new GroundCircle();
         this.horizontalLines = new HorizontalLines();
-        this.topBottomEllipses = new TopBottomEllipses();
+        this.outerFrameSphere = new OuterFrameSphere();
         this.outerFrameBoxes = new OuterFrameBoxes();
+        this.circularTorusCylinders = new CircularTorusCylinders();
     }
 
     init(p: p5): void {
@@ -91,6 +95,10 @@ export class TexManager {
         }
         const cameraParams = this.cam.easeCamera(beat);
         this.cam.setCameraParameter(cameraParams);
+
+        for (let i in this.objectShow) {
+            this.objectShow[i] = apcMiniMK2Manager.faderValues[i] == 1;
+        }
     }
 
     draw(p: p5, beat: number): void {
@@ -118,41 +126,19 @@ export class TexManager {
         this.cam.drawCamera(texture);
 
         // 各オブジェクトを描画
-        this.verticalBoxes.draw(p, texture, beat);
-        this.gridBoxes.draw(p, texture, beat, this.boxTexture);
-        this.circularBoxes.draw(p, texture, beat);
-        this.spiralBoxes.draw(p, texture, beat);
-        this.groundCircle.draw(p, texture, beat);
-        this.horizontalLines.draw(p, texture, beat);
-
-        for (let i = 0; i < 30; i++) {
-            const angle = i * Math.PI * 2 / 30 + beat * 0.1;
-            const r = 800;
-            const x = Math.cos(angle) * r;
-            const z = Math.sin(angle) * r;
-            texture.push();
-            texture.translate(x, 0, z);
-            texture.noStroke();
-            texture.fill(255, 100);
-            texture.rotateY(Math.PI);
-            texture.specularMaterial(100);
-            texture.torus(50, 5);
-
-            texture.stroke(255, 100);
-            texture.strokeWeight(0.5);
-            texture.noFill();
-            texture.rotateZ(Math.PI * 0.5);
-            texture.rotateX(Math.PI * 0.55);
-            texture.rotateY(beat * 0.1);
-            texture.cylinder(40, 30);
-            texture.pop();
-        }
+        if (this.objectShow[0]) this.verticalBoxes.draw(p, texture, beat);
+        if (this.objectShow[1]) this.gridBoxes.draw(p, texture, beat, this.boxTexture);
+        if (this.objectShow[2]) this.circularBoxes.draw(p, texture, beat);
+        if (this.objectShow[3]) this.spiralBoxes.draw(p, texture, beat);
+        if (this.objectShow[4]) this.groundCircle.draw(p, texture, beat);
+        if (this.objectShow[5]) this.horizontalLines.draw(p, texture, beat);
+        if (this.objectShow[6]) this.circularTorusCylinders.draw(p, texture, beat);
+        if (this.objectShow[7]) this.outerFrameBoxes.draw(p, texture, beat);
 
         texture.pop(); // カメラ用のpop
 
         // 周りパート
-        this.topBottomEllipses.draw(p, texture, beat);
-        this.outerFrameBoxes.draw(p, texture, beat);
+        if (this.objectShow[8]) this.outerFrameSphere.draw(p, texture, beat); // 見直す
 
         texture.pop(); // 最外層のpop
     }

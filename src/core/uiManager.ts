@@ -34,14 +34,20 @@ const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: 
     tex.text(DateText.getYYYYMMDD_HHMMSS_format(), tex.width - 45, tex.height - 45);
 
     tex.image(logo, 60, 60, Math.min(tex.width, tex.height) * 0.15, Math.min(tex.width, tex.height) * 0.15 * logo.height / logo.width);
-
-    tex.textSize(Math.min(tex.width, tex.height) * 0.035);
-    tex.text("FPS：" + fps.toFixed(2), tex.width - 45, tex.height - 75);
     tex.pop();
 }
 
+const UIDraw02: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number): void => {
+    tex.push();
+    tex.imageMode(p.CENTER);
+    tex.image(logo, tex.width / 2, tex.height / 2, Math.min(tex.width, tex.height) * 0.15, Math.min(tex.width, tex.height) * 0.15 * logo.height / logo.width);
+    tex.pop();
+}
+
+
 const UIDRAWERS: readonly UIDrawFunction[] = [
     UIDraw01,
+    UIDraw02,
 ];
 
 // UIManager は単純なテキストオーバーレイの描画を担当する。

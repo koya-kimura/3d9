@@ -30,7 +30,7 @@ const rotateYCameraPattern = (beat: number = 0): CameraParams => {
         y: Math.sin(beat * 0.2) * 100,
         z: -1200,
         rotX: 0,
-        rotY: angleClamp(-beat * 0.05 - GVM.leapRamp(beat, 32, 8, Easing.easeInOutSine) * Math.PI),
+        rotY: 0,
         rotZ: 0,
     };
 }
@@ -74,8 +74,8 @@ export class Camera {
     private targetCameraIndex: number | null = null;
     // 遷移開始時のビート
     private transitionStartBeat: number = 0;
-    // 1拍でカメラ遷移
-    private beatPerTransition: number = 1.0;
+    // 2拍でカメラ遷移
+    private beatPerTransition: number = 2.0;
 
     constructor(p: p5) {
         this.targetCameraIndex = 0;

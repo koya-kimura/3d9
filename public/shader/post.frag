@@ -74,10 +74,6 @@ void main(void) {
 
     vec2 bgUV = vTexCoord;
     vec4 bgCol = vec4(0.0, 0.0, 0.0, 1.0);
-    // bgUV -= vec2(0.5);
-    // bgUV *= rot(PI * 0.25);
-    // bgUV += 0.5;
-    // bgCol = vec4(mainColor * (mod(floor(bgUV.x * 20.0), 2.0) == 1.0 ? 1.0 : 0.0), 0.5);
 
     col = bgCol;
 
@@ -89,9 +85,10 @@ void main(void) {
     mainUV *= (1. + length(mainUV) * 0.05) * 0.5;
     mainUV += 0.5;
 
-    vec3 mosaicTex = vec3(0.0);
+    vec4 mosaicTex = vec4(0.0);
     vec2 mosaicUV = vTexCoord;
-    mosaicUV = mosaic(mosaicUV, u_resolution, 20.0);
+    // mosaicUV.x += sin(mosaicUV.y * 50.) * .1;
+    mosaicUV = mosaic(mosaicUV, u_resolution, 50.0);
     mosaicTex.r = random(mosaicUV + vec2(1.7, 9.2) + floor(u_beat)) * 0.4 + 0.6;
     mosaicTex.g = random(mosaicUV + vec2(5.2, 1.3) + floor(u_beat)) * 0.5;
     mosaicTex.b = random(mosaicUV + vec2(9.4, 7.2) + floor(u_beat)) * 0.3 + 0.5;
@@ -99,7 +96,7 @@ void main(void) {
     // mainUV = mosaic(mainUV, u_resolution, 200.0);
     vec4 mainCol = texture2D(u_tex, mainUV);
 
-    mainCol.rgb = mix3(mainCol.rgb, mosaicTex, pow(gray(mainCol.rgb) + 0.3, 3.0));
+    mainCol.rgb = mix3(mainCol.rgb, mosaicTex.rgb, pow(gray(mainCol.rgb) + 0.2, 4.0));
 
     // mainCol.rgb = gray(mainCol.rgb) * mainColor;
 
@@ -109,7 +106,7 @@ void main(void) {
 
     // =============
 
-    col.rgb = (gray(col.rgb) > 0.0 ? 1.0 : 0.0) * vec3(1.0);
+    // col.rgb = (gray(col.rgb) > 0.0 ? 1.0 : 0.0) * vec3(1.0);
 
     // =============
 

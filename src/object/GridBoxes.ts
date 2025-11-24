@@ -26,9 +26,9 @@ export class GridBoxes {
                     texture.fill(100 + ix * 50, 100 + iy * 50, 100 + iz * 50);
                     texture.stroke(200, 20, 150);
                     texture.strokeWeight(1);
-                    texture.rotateX(beat * 0.1 + ix);
-                    texture.rotateY(beat * 0.1 + iy);
-                    texture.rotateZ(beat * 0.1 + iz);
+                    texture.rotateX(beat * 0.04 + ix);
+                    texture.rotateY(beat * 0.04 + iy);
+                    texture.rotateZ(beat * 0.04 + iz);
                     texture.scale(1.0 + Easing.easeInOutExpo(Easing.zigzag(beat)) * 0.5);
                     if (boxTexture) texture.texture(boxTexture);
                     texture.box(this.BOX_SIZE);

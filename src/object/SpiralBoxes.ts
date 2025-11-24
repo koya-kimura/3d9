@@ -20,7 +20,7 @@ export class SpiralBoxes {
     draw(p: p5, texture: p5.Graphics, beat: number): void {
         for (let i = 0; i < this.BOX_COUNT; i++) {
             const x = Math.cos(beat + i * 0.1) * this.ORBIT_RADIUS + GVM.leapNoise(beat, 8, 2, Easing.easeOutSine, i, 0) * this.NOISE_RANGE - 100;
-            const y = Math.cos(beat * 0.01 + i * 0.1) * this.ORBIT_RADIUS + GVM.leapNoise(beat, 8, 2, Easing.easeOutSine, i, 1) * 500 - 250;
+            const y = Math.cos(beat * 0.01 + i * 0.3) * this.ORBIT_RADIUS + GVM.leapNoise(beat, 8, 2, Easing.easeOutSine, i, 1) * 500 - 250;
             const z = Math.sin(beat + i * 0.1) * this.ORBIT_RADIUS + GVM.leapNoise(beat, 8, 2, Easing.easeOutSine, i, 2) * this.NOISE_RANGE - 100;
 
             texture.push();

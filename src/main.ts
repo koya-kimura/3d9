@@ -42,7 +42,7 @@ const sketch = (p: p5) => {
   p.draw = () => {
     p.clear();
 
-    apcMiniMK2Manager.setMaxOptionsForPage(0, [7, 0, 0, 0, 0, 0, 0, 0])
+    apcMiniMK2Manager.setMaxOptionsForPage(0, [6, 0, 0, 0, 0, 0, 0, 0])
     apcMiniMK2Manager.setMaxOptionsForPage(1, [0, 0, 0, 0, 0, 0, 0, 0])
     apcMiniMK2Manager.setMaxOptionsForPage(2, [0, 0, 0, 0, 0, 0, 0, 0])
     apcMiniMK2Manager.setMaxOptionsForPage(3, [0, 0, 0, 0, 0, 0, 0, 0])

@@ -18,7 +18,7 @@ export class CircularBoxes {
      */
     draw(p: p5, texture: p5.Graphics, beat: number): void {
         for (let i = 0; i < this.BOX_COUNT; i++) {
-            const angle = (i / this.BOX_COUNT) * Math.PI * 2 + beat * 0.5 + GVM.leapRamp(beat, 32, 8, Easing.easeOutCubic) * Math.PI;
+            const angle = (i / this.BOX_COUNT) * Math.PI * 2 + beat * 0.1 + GVM.leapRamp(beat, 32, 8, Easing.easeOutCubic) * Math.PI;
 
             texture.push();
             texture.translate(Math.cos(angle) * this.RADIUS, Math.sin(angle) * this.RADIUS, 0);
