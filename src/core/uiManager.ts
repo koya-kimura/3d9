@@ -92,11 +92,12 @@ export class UIManager {
     private static logger: Logger = new Logger(5);
 
     // UI遷移の管理
-    private currentUiIndex: number = 0;
-    private targetUiIndex: number = 0;
+    public currentUiIndex: number = 0;
+    public targetUiIndex: number = 0;
     private transitionStartBeat: number = 0;
     private isTransitioning: boolean = false;
     private beatPerTransition: number = 2.0; // 2拍でUI遷移
+    private currentProgress: number = 0.0; // 現在の進行度を保持
 
     /**
      * UIManagerクラスのコンストラクタです。
@@ -172,6 +173,14 @@ export class UIManager {
         this.isTransitioning = true;
     }
 
+    /**
+     * 現在のUI遷移の進行度を取得します。
+     * @returns 遷移進行度（0.0 - 1.0）、遷移中でなければ0.0
+     */
+    getUiTransitionProgress(): number {
+        return this.isTransitioning ? this.currentProgress : 0.0;
+    }
+
     update(p: p5, beat: number, logger: Logger): void {
         // FPS計測
         if (p.millis() % 300 < 20) this.fps = p.frameRate();
@@ -208,12 +217,16 @@ export class UIManager {
             const elapsedBeat = beat - this.transitionStartBeat;
             const rawProgress = Math.min(elapsedBeat / this.beatPerTransition, 1.0);
             progress = Easing.easeOutSine(rawProgress); // イージングを適用
+            this.currentProgress = progress; // 進行度を保存
 
             if (rawProgress >= 1.0) {
                 // 遷移完了
                 this.isTransitioning = false;
                 this.currentUiIndex = this.targetUiIndex;
+                this.currentProgress = 0.0;
             }
+        } else {
+            this.currentProgress = 0.0;
         }
 
         if (this.isTransitioning) {

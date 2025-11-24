@@ -4,9 +4,13 @@ varying vec2 vTexCoord;
 
 uniform float u_beat;
 uniform float u_time;
+uniform float u_uiProgress; // UI遷移の進行度 (0.0-1.0)
 uniform vec2 u_resolution;
 uniform sampler2D u_tex;
 uniform sampler2D u_uiTex;
+
+uniform float u_preUIIndex;
+uniform float u_nowUIIndex;
 
 vec3 mainColor = vec3(0.1, 0.9, 0.5);
 float PI = 3.14159265358979;
@@ -66,27 +70,65 @@ vec3 mix3(vec3 a, vec3 b, float t) {
     return vec3(mix(a.x, b.x, t), mix(a.y, b.y, t), mix(a.z, b.z, t));
 }
 
+vec2 repeat(vec2 uv){
+    return fract(floor(abs(uv)) + uv);
+}
+
+bool isOutside(vec2 uv){
+    if(abs(uv.x - 0.5) > 0.5 || abs(uv.y - 0.5) > 0.5){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+vec3 getUIInfo(int index){
+    if(index == 0){
+        return vec3(0.5, 0.5, 1.0);
+    }else if(index == 1){
+        return vec3(0.1, 0.7, 0.5);
+    }else if(index == 2){
+        return vec3(0.5, 0.5, 0.1);
+    }else{
+        return vec3(0.0, 0.0, 0.0);
+    }
+}
+
 void main(void) {
+    // UI遷移の進行度に合わせてメインテクスチャのUVを上方向にオフセット
+    // UIテクスチャはp5.jsのtranslateで既に動いているので、vTexCoordをそのまま使う
+    vec2 initialUV = vTexCoord + vec2(0.0, u_uiProgress);
+
+    float uiIndex = floor(initialUV.y);
+    initialUV = repeat(initialUV);
+
+    vec2 pos = uiIndex == 0. ? getUIInfo(int(u_preUIIndex)).xy : getUIInfo(int(u_nowUIIndex)).xy;
+    float scl = uiIndex == 0. ? getUIInfo(int(u_preUIIndex)).z : getUIInfo(int(u_nowUIIndex)).z;
+    
+    float rscl = 1. / scl;
+    vec2 rpos = vec2(map(pos.x, 0.0, 1.0, rscl/2., -rscl/2.), map(pos.y, 0.0, 1.0, rscl/2., -rscl/2.));
+
+    initialUV -= vec2(0.5);
+    initialUV *= rscl;
+    initialUV += rpos;
+    initialUV += vec2(0.5);
+
+    bool outside = isOutside(initialUV);
+
+    // UIテクスチャはp5.jsのtranslateで既に動いているので、vTexCoordをそのまま使う
     vec2 uv = vTexCoord;
     vec4 col = vec4(0.0, 0.0, 0.0, 1.0);
 
     // =============
 
-    vec2 bgUV = vTexCoord;
-    vec4 bgCol = vec4(0.0, 0.0, 0.0, 1.0);
-
-    col = bgCol;
-
-    // =============
-
-    vec2 mainUV = vTexCoord;
+    vec2 mainUV = initialUV;
 
     mainUV -= 0.5;
     mainUV *= (1. + length(mainUV) * 0.05) * 0.5;
     mainUV += 0.5;
 
     vec4 mosaicTex = vec4(0.0);
-    vec2 mosaicUV = vTexCoord;
+    vec2 mosaicUV = initialUV;
     // mosaicUV.x += sin(mosaicUV.y * 50.) * .1;
     mosaicUV = mosaic(mosaicUV, u_resolution, 50.0);
     mosaicTex.r = random(mosaicUV + vec2(1.7, 9.2) + floor(u_beat)) * 0.4 + 0.6;
@@ -110,11 +152,18 @@ void main(void) {
 
     // =============
 
-    if(abs(sin(vTexCoord.y+u_time * 0.2)) > 0.999){
-        vec2 vTexCoordR = vec2(vTexCoord.x + random(vec2(vTexCoord.x+u_time, vTexCoord.y+u_time)) * 0.005, vTexCoord.y+random(vec2(vTexCoord.x+u_time,vTexCoord.y+u_time))*.005);
-        mainCol.rgb = texture2D(u_tex,vTexCoordR).rgb;
+    if(abs(sin(initialUV.y+u_time * 0.2)) > 0.999){
+        vec2 initialUVR = vec2(initialUV.x + random(vec2(initialUV.x+u_time, initialUV.y+u_time)) * 0.005, initialUV.y+random(vec2(initialUV.x+u_time,initialUV.y+u_time))*.005);
+        mainCol.rgb = texture2D(u_tex,initialUVR).rgb;
     }
 
+    if(outside){
+        col.rgb = vec3(0.0);
+    }
+
+    // =============
+
+    // UIテクスチャはp5.jsで既にtranslateされているので、vTexCoordをそのまま使う
     vec4 uiCol = texture2D(u_uiTex, vTexCoord);
     col.rgb += gray(uiCol.rgb) * 0.95 * mainColor;
 

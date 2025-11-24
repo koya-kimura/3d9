@@ -64,7 +64,8 @@ const sketch = (p: p5) => {
     uiManager.draw(p, font, logo, bpmManager.getBeat(), logger);
 
     // ポストエフェクトの適用と画面への描画
-    effectManager.apply(p, texManager.getTexture(), uiManager.getTexture(), apcMiniMK2Manager.faderValues, bpmManager.getBeat());
+    const uiProgress = uiManager.getUiTransitionProgress();
+    effectManager.apply(p, texManager.getTexture(), uiManager.getTexture(), apcMiniMK2Manager.faderValues, bpmManager.getBeat(), uiProgress, uiManager.targetUiIndex, uiManager.currentUiIndex);
   };
 
   // windowResized はウィンドウサイズ変更時にキャンバスとテクスチャをリサイズする。
