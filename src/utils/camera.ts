@@ -51,6 +51,7 @@ export type CameraPattern = CameraParams | ((beat: number) => CameraParams);
 
 // カメラパターン配列（静的値 or 関数）
 export const cameraPatterns: CameraPattern[] = [
+    { x: 0, y: -500, z: 0, rotX: 0, rotY: 0, rotZ: Math.PI * 0.5 },
     (beat: number) => rotateYCameraPattern(beat),
     { x: 0, y: 0, z: -400, rotX: Math.PI * 0.51, rotY: 0, rotZ: 0 },
     (beat: number) => rotateCameraPattern(beat),

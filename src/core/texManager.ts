@@ -124,6 +124,21 @@ export class TexManager {
         this.groundCircle.draw(p, texture, beat);
         this.horizontalLines.draw(p, texture, beat);
 
+        texture.push();
+        // for (let i = 0; i < 30; i++) {
+        //     const angle = i * Math.PI * 2 / 30 + beat * 0.1;
+        //     const r = 500;
+        //     const x = Math.cos(angle) * r;
+        //     const z = Math.sin(angle) * r;
+        //     texture.push();
+        //     texture.translate(x, 0, z);
+        //     texture.noFill();
+        //     texture.strokeWeight(1);
+        //     texture.stroke(255);
+        //     texture.box(20);
+        //     texture.pop();
+        // }
+
         texture.pop();
 
         // 周りパート

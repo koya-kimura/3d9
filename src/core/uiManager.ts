@@ -1,7 +1,7 @@
 import p5 from "p5";
 import { DateText } from "../utils/dateText";
 
-type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image) => void;
+type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number) => void;
 
 /**
  * UI描画関数その2（インデックス1）。
@@ -15,7 +15,7 @@ type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image) =
  *
  * @param context 描画に必要なコンテキスト情報。
  */
-const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image): void => {
+const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image, fps: number): void => {
     tex.push();
     tex.textFont(font);
 
@@ -34,6 +34,9 @@ const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: 
     tex.text(DateText.getYYYYMMDD_HHMMSS_format(), tex.width - 45, tex.height - 45);
 
     tex.image(logo, 60, 60, Math.min(tex.width, tex.height) * 0.15, Math.min(tex.width, tex.height) * 0.15 * logo.height / logo.width);
+
+    tex.textSize(Math.min(tex.width, tex.height) * 0.035);
+    tex.text("FPS：" + fps.toFixed(2), tex.width - 45, tex.height - 75);
     tex.pop();
 }
 
@@ -44,6 +47,7 @@ const UIDRAWERS: readonly UIDrawFunction[] = [
 // UIManager は単純なテキストオーバーレイの描画を担当する。
 export class UIManager {
     private renderTexture: p5.Graphics | undefined;
+    private fps: number = 60.0;
 
     /**
      * UIManagerクラスのコンストラクタです。
@@ -120,10 +124,14 @@ export class UIManager {
             throw new Error("Texture not initialized");
         }
 
+        // ---
+        if (p.millis() % 300 < 20) this.fps = p.frameRate();
+        // ---
+
         texture.push();
         texture.clear();
         const drawer = UIDRAWERS[0];
-        drawer(p, texture, font, logo);
+        drawer(p, texture, font, logo, this.fps);
 
         texture.pop();
     }
