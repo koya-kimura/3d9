@@ -14,6 +14,7 @@ const effectManager = new EffectManager();
 const apcMiniMK2Manager = new APCMiniMK2Manager("random");
 
 let font: p5.Font;
+let logo: p5.Image;
 
 const sketch = (p: p5) => {
   p.setup = async () => {
@@ -28,7 +29,8 @@ const sketch = (p: p5) => {
     apcMiniMK2Manager.init();
 
     // リソースの読み込み
-    font = await p.loadFont("/font/Jost-Regular.ttf");
+    font = await p.loadFont("/font/DS-DIGIB.TTF");
+    logo = await p.loadImage("/image/Flow.png");
     await effectManager.load(
       p,
       "/shader/post.vert",
@@ -40,7 +42,7 @@ const sketch = (p: p5) => {
   p.draw = () => {
     p.clear();
 
-    apcMiniMK2Manager.setMaxOptionsForPage(0, [2, 0, 0, 0, 0, 0, 0, 0])
+    apcMiniMK2Manager.setMaxOptionsForPage(0, [7, 0, 0, 0, 0, 0, 0, 0])
     apcMiniMK2Manager.setMaxOptionsForPage(1, [0, 0, 0, 0, 0, 0, 0, 0])
     apcMiniMK2Manager.setMaxOptionsForPage(2, [0, 0, 0, 0, 0, 0, 0, 0])
     apcMiniMK2Manager.setMaxOptionsForPage(3, [0, 0, 0, 0, 0, 0, 0, 0])
@@ -56,7 +58,7 @@ const sketch = (p: p5) => {
     texManager.update(p, bpmManager.getBeat(), apcMiniMK2Manager);
     texManager.draw(p, bpmManager.getBeat());
 
-    uiManager.draw(p, font);
+    uiManager.draw(p, font, logo);
 
     // ポストエフェクトの適用と画面への描画
     effectManager.apply(p, texManager.getTexture(), uiManager.getTexture(), apcMiniMK2Manager.faderValues, bpmManager.getBeat());

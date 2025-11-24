@@ -8,6 +8,7 @@ uniform vec2 u_resolution;
 uniform sampler2D u_tex;
 uniform sampler2D u_uiTex;
 
+vec3 mainColor = vec3(0.1, 0.9, 0.5);
 float PI = 3.14159265358979;
 
 float random(vec2 st) {
@@ -38,6 +39,10 @@ float gray(vec3 col) {
     return dot(col, vec3(0.299, 0.587, 0.114));
 }
 
+vec3 invert(vec3 col) {
+    return vec3(1.0) - col;
+}
+
 vec3 hsv2rgb(in float h) {
     float s = 1.;
     float v = 1.;
@@ -53,27 +58,6 @@ float map(float value, float min1, float max1, float min2, float max2) {
     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 }
 
-// vec3 index2Color(int index) {
-//     if(index == 0)
-//         return vec3(u_colorPalette[0], u_colorPalette[1], u_colorPalette[2]);
-//     else if(index == 1)
-//         return vec3(u_colorPalette[3], u_colorPalette[4], u_colorPalette[5]);
-//     else if(index == 2)
-//         return vec3(u_colorPalette[6], u_colorPalette[7], u_colorPalette[8]);
-//     else if(index == 3)
-//         return vec3(u_colorPalette[9], u_colorPalette[10], u_colorPalette[11]);
-//     else if(index == 4)
-//         return vec3(u_colorPalette[12], u_colorPalette[13], u_colorPalette[14]);
-//     else if(index == 5)
-//         return vec3(u_colorPalette[15], u_colorPalette[16], u_colorPalette[17]);
-//     else if(index == 6)
-//         return vec3(u_colorPalette[18], u_colorPalette[19], u_colorPalette[20]);
-//     else if(index == 7)
-//         return vec3(u_colorPalette[21], u_colorPalette[22], u_colorPalette[23]);
-//     else
-//         return vec3(0.0);
-// }
-
 float zigzag(float x) {
     return abs(fract(x * 2.0) - 1.0);
 }
@@ -84,11 +68,26 @@ vec3 mix3(vec3 a, vec3 b, float t) {
 
 void main(void) {
     vec2 uv = vTexCoord;
-    vec4 col = texture2D(u_tex, uv);
+    vec4 col = vec4(0.0, 0.0, 0.0, 1.0);
 
-    uv -= 0.5;
-    uv *= (1. + length(uv)) * 0.5;
-    uv += 0.5;
+    // =============
+
+    vec2 bgUV = vTexCoord;
+    vec4 bgCol = vec4(0.0, 0.0, 0.0, 1.0);
+    // bgUV -= vec2(0.5);
+    // bgUV *= rot(PI * 0.25);
+    // bgUV += 0.5;
+    // bgCol = vec4(mainColor * (mod(floor(bgUV.x * 20.0), 2.0) == 1.0 ? 1.0 : 0.0), 0.5);
+
+    col = bgCol;
+
+    // =============
+
+    vec2 mainUV = vTexCoord;
+
+    mainUV -= 0.5;
+    mainUV *= (1. + length(mainUV) * 0.05) * 0.5;
+    mainUV += 0.5;
 
     vec3 mosaicTex = vec3(0.0);
     vec2 mosaicUV = vTexCoord;
@@ -97,15 +96,25 @@ void main(void) {
     mosaicTex.g = random(mosaicUV + vec2(5.2, 1.3) + floor(u_beat)) * 0.5;
     mosaicTex.b = random(mosaicUV + vec2(9.4, 7.2) + floor(u_beat)) * 0.3 + 0.5;
 
-    col.rgb = mix3(col.rgb, mosaicTex, pow(gray(col.rgb) + 0.3, 3.0));
+    vec4 mainCol = texture2D(u_tex, mainUV);
+
+    mainCol.rgb = mix3(mainCol.rgb, mosaicTex, pow(gray(mainCol.rgb) + 0.3, 3.0));
+
+    // mainCol.rgb = gray(mainCol.rgb) * mainColor;
+
+    if(mainCol.a > 0.0){
+        col.rgb = mainCol.rgb;
+    }
+
+    // =============
 
     if(abs(sin(vTexCoord.y+u_time * 0.2)) > 0.999){
         vec2 vTexCoordR = vec2(vTexCoord.x + random(vec2(vTexCoord.x+u_time, vTexCoord.y+u_time)) * 0.005, vTexCoord.y+random(vec2(vTexCoord.x+u_time,vTexCoord.y+u_time))*.005);
-        col.rgb = texture2D(u_tex,vTexCoordR).rgb;
+        mainCol.rgb = texture2D(u_tex,vTexCoordR).rgb;
     }
 
     vec4 uiCol = texture2D(u_uiTex, vTexCoord);
-    col += uiCol;
+    col.rgb += gray(uiCol.rgb) * 0.95 * mainColor;
 
     gl_FragColor = col;
 }

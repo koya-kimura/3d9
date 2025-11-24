@@ -1,7 +1,7 @@
 import p5 from "p5";
 import { DateText } from "../utils/dateText";
 
-type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font) => void;
+type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image) => void;
 
 /**
  * UI描画関数その2（インデックス1）。
@@ -15,21 +15,25 @@ type UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font) => void;
  *
  * @param context 描画に必要なコンテキスト情報。
  */
-const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font): void => {
+const UIDraw01: UIDrawFunction = (p: p5, tex: p5.Graphics, font: p5.Font, logo: p5.Image): void => {
     tex.push();
     tex.textFont(font);
 
     tex.rectMode(p.CENTER);
     tex.stroke(255, 100);
     tex.noFill();
-    tex.rect(tex.width / 2, tex.height / 2, tex.width - 40, tex.height - 40);
-    tex.rect(tex.width / 2, tex.height / 2, tex.width - 60, tex.height - 60);
+    tex.strokeWeight(5);
+    tex.rect(tex.width / 2, tex.height / 2, tex.width - 40, tex.height - 40, 5, 5);
+    tex.strokeWeight(2);
+    tex.rect(tex.width / 2, tex.height / 2, tex.width - 60, tex.height - 60, 5, 5);
 
     tex.textAlign(p.RIGHT, p.BOTTOM);
     tex.fill(255, 230);
     tex.noStroke();
-    tex.textSize(Math.min(tex.width, tex.height) * 0.025);
+    tex.textSize(Math.min(tex.width, tex.height) * 0.03);
     tex.text(DateText.getYYYYMMDD_HHMMSS_format(), tex.width - 45, tex.height - 45);
+
+    tex.image(logo, 60, 60, Math.min(tex.width, tex.height) * 0.15, Math.min(tex.width, tex.height) * 0.15 * logo.height / logo.width);
     tex.pop();
 }
 
@@ -110,7 +114,7 @@ export class UIManager {
      * @param p p5.jsのインスタンス。
      * @param font UI描画に使用するフォント。
      */
-    draw(p: p5, font: p5.Font): void {
+    draw(p: p5, font: p5.Font, logo: p5.Image): void {
         const texture = this.renderTexture;
         if (!texture) {
             throw new Error("Texture not initialized");
@@ -119,7 +123,7 @@ export class UIManager {
         texture.push();
         texture.clear();
         const drawer = UIDRAWERS[0];
-        drawer(p, texture, font);
+        drawer(p, texture, font, logo);
 
         texture.pop();
     }
