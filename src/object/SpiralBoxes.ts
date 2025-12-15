@@ -1,6 +1,6 @@
 import p5 from "p5";
-import { GVM } from "../utils/gvm";
-import { Easing } from "../utils/easing";
+import { GVM } from "../utils/math/gvm";
+import { Easing } from "../utils/math/easing";
 
 /**
  * 螺旋状に配置された300個の小ボックスを描画するクラス

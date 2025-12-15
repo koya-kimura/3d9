@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { Easing } from "../utils/easing";
+import { Easing } from "../utils/math/easing";
 
 /**
  * 3x3x3グリッド配置のテクスチャ付きボックスを描画するクラス

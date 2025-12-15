@@ -1,7 +1,7 @@
 import p5 from "p5";
-import { GVM } from "../utils/gvm";
-import { Easing } from "../utils/easing";
-import { UniformRandom } from "../utils/uniformRandom";
+import { GVM } from "../utils/math/gvm";
+import { Easing } from "../utils/math/easing";
+import { UniformRandom } from "../utils/math/uniformRandom";
 
 /**
  * 垂直に並ぶ300個の可変高さボックスを描画するクラス

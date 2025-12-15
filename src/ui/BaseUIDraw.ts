@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { Logger } from "../utils/Logger";
+import { Logger } from "../utils/log/logger";
 import type { UIManager } from "../core/uiManager";
 
 /**

@@ -1,7 +1,7 @@
 import p5 from "p5";
-import { GVM } from "./gvm";
-import { Easing } from "./easing";
-import { angleClamp, lerp } from "./mathUtils";
+import { GVM } from "../math/gvm";
+import { Easing } from "../math/easing";
+import { angleClamp, lerp } from "../math/mathUtils";
 
 // カメラのパラメータ型
 export interface CameraParams {

@@ -1,6 +1,6 @@
 import p5 from "p5";
-import { Easing } from "../utils/easing";
-import { Logger } from "../utils/Logger";
+import { Easing } from "../utils/math/easing";
+import { Logger } from "../utils/log/logger";
 import { BaseUIDraw } from "../ui/BaseUIDraw";
 import { UIDraw02 } from "../ui/UIDraw02";
 

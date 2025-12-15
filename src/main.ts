@@ -1,7 +1,7 @@
 // main.ts は p5 スケッチのエントリーポイントとして描画ループを構成する。
 import p5 from "p5";
 
-import { Logger } from "./utils/Logger";
+import { Logger } from "./utils/log/logger";
 import { TexManager } from "./core/texManager";
 import { UIManager } from "./core/uiManager";
 import { EffectManager } from "./core/effectManager";

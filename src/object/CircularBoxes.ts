@@ -1,6 +1,6 @@
 import p5 from "p5";
-import { GVM } from "../utils/gvm";
-import { Easing } from "../utils/easing";
+import { GVM } from "../utils/math/gvm";
+import { Easing } from "../utils/math/easing";
 
 /**
  * 円形に並ぶ30個のボックスを描画するクラス

@@ -1,6 +1,6 @@
 import p5 from "p5";
-import { GVM } from "../utils/gvm";
-import { Easing } from "../utils/easing";
+import { GVM } from "../utils/math/gvm";
+import { Easing } from "../utils/math/easing";
 
 /**
  * 100個の横線とキューブを描画するクラス

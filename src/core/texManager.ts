@@ -1,7 +1,7 @@
 import p5 from "p5";
 
 import { APCMiniMK2Manager } from "../midi/apcmini_mk2/apcMiniMk2Manager";
-import { Camera } from "../utils/camera";
+import { Camera } from "../utils/camera/camera";
 import { VerticalBoxes } from "../object/VerticalBoxes";
 import { GridBoxes } from "../object/GridBoxes";
 import { CircularBoxes } from "../object/CircularBoxes";
