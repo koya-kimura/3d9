@@ -44,7 +44,7 @@ const sketch = (p: p5) => {
   p.draw = () => {
     p.clear();
 
-    apcMiniMK2Manager.setMaxOptionsForPage(0, [6, 0, 0, 0, 0, 0, 0, 7])
+    apcMiniMK2Manager.setMaxOptionsForPage(0, [6, 0, 0, 0, 0, 0, 0, 6])
 
     bpmManager.update();
     apcMiniMK2Manager.update(Math.floor(bpmManager.getBeat()));
