@@ -46,20 +46,18 @@ export class EffectManager {
      * @param beat 現在のビート情報。リズムに合わせたエフェクト同期に使用。
      * @param colorPaletteRGBArray カラーパレットのRGB値がフラットに並んだ配列。
      */
-    apply(p: p5, sourceTexture: p5.Graphics, uiTexture: p5.Graphics, faderValues: number[], beat: number = 0, uiProgress: number = 0, nowUIIndex: number = 0, preUIIndex: number = 0): void {
+    apply(p: p5, sourceTexture: p5.Graphics, uiTexture: p5.Graphics, faderValues: number[], beat: number = 0): void {
         if (!this.shader) {
             return;
         }
 
         p.shader(this.shader);
-        this.shader.setUniform("u_preUIIndex", preUIIndex);
-        this.shader.setUniform("u_nowUIIndex", nowUIIndex);
         this.shader.setUniform("u_beat", beat);
         this.shader.setUniform("u_tex", sourceTexture);
         this.shader.setUniform("u_uiTex", uiTexture);
         this.shader.setUniform("u_resolution", [p.width, p.height]);
         this.shader.setUniform("u_time", p.millis() / 1000.0);
-        this.shader.setUniform("u_uiProgress", uiProgress); // UI遷移進行度
+
         // this.shader.setUniform("u_colorPalette", colorPaletteRGBArray);
         // this.shader.setUniform("u_colorPaletteLength", Math.floor(colorPaletteRGBArray.length / 3));
 

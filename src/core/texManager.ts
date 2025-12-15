@@ -1,6 +1,6 @@
 import p5 from "p5";
 
-import { APCMiniMK2Manager } from "../midi/apcmini_mk2/APCMiniMK2Manager";
+import { APCMiniMK2Manager } from "../midi/apcmini_mk2/apcMiniMk2Manager";
 import { Camera } from "../utils/camera";
 import { VerticalBoxes } from "../object/VerticalBoxes";
 import { GridBoxes } from "../object/GridBoxes";
@@ -80,7 +80,7 @@ export class TexManager {
     }
 
     update(p: p5, beat: number, apcMiniMK2Manager: APCMiniMK2Manager): void {
-        const nowCameraIndex = apcMiniMK2Manager.getParamValues(0)[0] % 7;
+        const nowCameraIndex = 4;
         if (nowCameraIndex !== this.cameraIndex) {
             if (!this.cam) {
                 throw new Error("Camera not initialized");
@@ -97,7 +97,7 @@ export class TexManager {
         this.cam.setCameraParameter(cameraParams);
 
         for (let i in this.objectShow) {
-            this.objectShow[i] = apcMiniMK2Manager.faderValues[i] == 1;
+            this.objectShow[i] = true;
         }
     }
 
@@ -139,17 +139,6 @@ export class TexManager {
 
         // 周りパート
         if (this.objectShow[8]) this.outerFrameSphere.draw(p, texture, beat);
-
-        // デバッグ
-        texture.background(255);
-        texture.push();
-        texture.rotateX(beat * 0.1);
-        texture.rotateY(beat * 0.1);
-        texture.rotateZ(beat * 0.1);
-        texture.stroke(255);
-        texture.fill(255);
-        texture.box(100);
-        texture.pop();
 
         texture.pop(); // 最外層のpop
     }
