@@ -9,25 +9,18 @@ export class EffectManager {
     }
 
     /**
-     * 指定されたパスから頂点シェーダーとフラグメントシェーダーを非同期で読み込みます。
-     * p5.jsのloadShader関数を使用し、シェーダーオブジェクトを作成してクラス内部に保持します。
-     * 読み込み処理がPromiseを返す場合（特定のp5.jsのバージョンや環境など）にも対応しており、
-     * async/awaitを用いてシェーダーのロード完了を確実に待機します。
-     * これにより、描画ループが開始される前にシェーダーリソースが確実に利用可能な状態になることを保証します。
+     * 頂点シェーダーとフラグメントシェーダーのソースコードからシェーダーを作成します。
+     * vite-plugin-glslでインポートしたシェーダーソース文字列を受け取り、
+     * p5.jsのcreateShader関数を使用してシェーダーオブジェクトを作成します。
+     * これによりシェーダーファイルの変更時にHMR（Hot Module Replacement）が動作し、
+     * ブラウザを手動でリロードすることなくシェーダーの変更が反映されます。
      *
-     * @param p p5.jsのインスタンス。シェーダーのロード機能を提供します。
-     * @param vertPath 頂点シェーダーファイルのパス（.vert）。
-     * @param fragPath フラグメントシェーダーファイルのパス（.frag）。
-     * @returns シェーダーの読み込みが完了した後に解決されるPromise。
+     * @param p p5.jsのインスタンス。シェーダーの作成機能を提供します。
+     * @param vertSource 頂点シェーダーのソースコード文字列。
+     * @param fragSource フラグメントシェーダーのソースコード文字列。
      */
-    async load(p: p5, vertPath: string, fragPath: string): Promise<void> {
-        const shaderOrPromise = p.loadShader(vertPath, fragPath);
-
-        if (shaderOrPromise instanceof Promise) {
-            this.shader = await shaderOrPromise;
-        } else {
-            this.shader = shaderOrPromise;
-        }
+    load(p: p5, vertSource: string, fragSource: string): void {
+        this.shader = p.createShader(vertSource, fragSource);
     }
 
     /**

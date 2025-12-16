@@ -7,6 +7,11 @@ import { UIManager } from "./core/uiManager";
 import { EffectManager } from "./core/effectManager";
 import { BPMManager } from "./rhythm/BPMManager";
 import { APCMiniMK2Manager } from "./midi/apcmini_mk2/apcMiniMk2Manager";
+import { AudioMicManager } from "./utils/audio/audioMicManager";
+
+// シェーダーをインポート（vite-plugin-glslにより文字列として読み込まれる）
+import postVert from "../public/shader/post.vert";
+import postFrag from "../public/shader/post.frag";
 
 const logger = new Logger();
 const texManager = new TexManager();
@@ -14,6 +19,7 @@ const uiManager = new UIManager();
 const bpmManager = new BPMManager();
 const effectManager = new EffectManager();
 const apcMiniMK2Manager = new APCMiniMK2Manager();
+const audioMicManager = new AudioMicManager();
 
 let font: p5.Font;
 let logo: p5.Image;
@@ -29,20 +35,20 @@ const sketch = (p: p5) => {
     texManager.init(p);
     uiManager.init(p);
     apcMiniMK2Manager.init();
+    audioMicManager.init();
 
     // リソースの読み込み
     font = await p.loadFont("/font/DS-DIGIB.TTF");
     logo = await p.loadImage("/image/Flow.png");
-    await effectManager.load(
-      p,
-      "/shader/post.vert",
-      "/shader/post.frag",
-    );
+
+    effectManager.load(p, postVert, postFrag);
   };
 
   // draw は毎フレームのループでシーン更新とポストエフェクトを適用する。
   p.draw = () => {
     p.clear();
+
+    audioMicManager.update();
 
     bpmManager.update();
     apcMiniMK2Manager.update(Math.floor(bpmManager.getBeat()));
