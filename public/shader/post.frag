@@ -10,6 +10,7 @@ uniform float u_time;
 uniform vec2 u_resolution;
 uniform sampler2D u_tex;
 uniform sampler2D u_uiTex;
+uniform float u_faderValues[9];
 
 vec3 mainColor = vec3(0.1, 0.9, 0.5);
 
@@ -17,6 +18,7 @@ vec3 mainColor = vec3(0.1, 0.9, 0.5);
 #include "./utils/math.frag"
 #include "./utils/coord.frag"
 #include "./utils/color.frag"
+#include "./utils/midi.frag"
 
 void main(void) {
     vec2 uv = vTexCoord;
@@ -33,9 +35,16 @@ void main(void) {
 
     vec2 mainUV = vTexCoord;
 
+    // float size = 0.05;
+    // mainUV += vec2(random(uv + vec2(4729.4279, 2947.2947)) * size - size * 0.5, random(uv + vec2(2947.2947, 4729.4279)) * size - size * 0.5);
+    // mainUV = vec2(floor(mainUV.x * 64.0) / 64.0, floor(mainUV.y * 36.0) / 36.0);
+
     mainUV -= 0.5;
     mainUV *= (1. + length(mainUV) * 0.05) * 0.5;
     mainUV += 0.5;
+
+    // ランダムなラインスライス効果を適用
+    mainUV = applyRandomLineSlice(mainUV, u_beat);
 
     vec4 mosaicTex = vec4(0.0);
     vec2 mosaicUV = vTexCoord;
@@ -47,13 +56,14 @@ void main(void) {
 
     vec4 mainCol = texture2D(u_tex, mainUV);
 
-    // mainCol.rgb = mix3(mainCol.rgb, mosaicTex.rgb, pow(gray(mainCol.rgb) + 0.2, 4.0));
-
-    if(gray(mainCol.rgb) > 0.2 && mainCol.a > 0.0){
-        col.rgb = vec3(1.0, 1.0, 0.0);
+    if(getFaderValue(0) != 1.0){
+        mainCol.rgb = mix3(mainCol.rgb, mosaicTex.rgb, pow(gray(mainCol.rgb) + 0.2, 4.0));
+        col.rgb = mainCol.rgb;
+    } else {
+        if(gray(mainCol.rgb) > 0.2 && mainCol.a > 0.0){
+            col.rgb = vec3(1.0, 1.0, 0.0);
+        }
     }
-
-    // ============
 
     if(abs(sin(vTexCoord.y+u_time * 0.2)) > 0.999){
         vec2 vTexCoordR = vec2(vTexCoord.x + random(vec2(vTexCoord.x+u_time, vTexCoord.y+u_time)) * 0.005, vTexCoord.y+random(vec2(vTexCoord.x+u_time,vTexCoord.y+u_time))*.005);

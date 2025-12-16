@@ -12,16 +12,23 @@ export class OuterFrameSphere {
      * @param p - p5インスタンス
      * @param texture - 描画コンテキスト
      * @param beat - 現在のビート値
+     * @param whiteMode - 白塗りモード
      */
-    draw(p: p5, texture: p5.Graphics, beat: number): void {
+    draw(p: p5, texture: p5.Graphics, beat: number, whiteMode: boolean = false): void {
         // 周りパート
         texture.push();
         texture.rotateX(beat * 0.022);
         texture.rotateY(beat * 0.024);
         texture.rotateZ(beat * 0.026);
 
-        texture.fill(255, 30);
-        texture.stroke(255);
+        if (whiteMode) {
+            texture.stroke(255);
+            texture.noFill();
+        } else {
+            texture.fill(255, 30);
+            texture.stroke(255);
+        }
+
         texture.sphere(6000);
 
         texture.pop();

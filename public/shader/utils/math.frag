@@ -35,5 +35,26 @@ float map(float value, float min1, float max1, float min2, float max2) {
 
 // ジグザグ波形生成
 float zigzag(float x) {
-    return abs(fract(x * 2.0) - 1.0);
+    return abs(mod(x, 2.0) - 1.0);
+}
+
+// ランダムなラインスライス効果を適用
+// uv: 入力UV座標
+// beat: ビート値（整数部分がランダムシード）
+vec2 applyRandomLineSlice(vec2 uv, float beat) {
+    float edge = map(random(vec2(floor(beat), 5720.4789)), 0.0, 1.0, -0.3, 0.3);
+    float angle = map(random(vec2(floor(beat), 1093.5427)), 0.0, 1.0, 0.0, PI*2.0);
+    
+    vec2 lineUV = uv;
+    lineUV -= 0.5;  // 中心を原点に
+    lineUV *= rot(angle);  // 回転
+    
+    if(lineUV.y > edge){
+        lineUV.y = edge;  // edgeの位置でクランプ
+    }
+    
+    lineUV *= rot(-angle);  // 逆回転して元の座標系に戻す
+    lineUV += 0.5;  // 元の範囲に戻す
+    
+    return lineUV;
 }

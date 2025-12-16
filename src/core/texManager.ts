@@ -29,7 +29,6 @@ export class TexManager {
     private outerFrameSphere: OuterFrameSphere;
     private outerFrameBoxes: OuterFrameBoxes;
     private circularTorusCylinders: CircularTorusCylinders;
-    private objectShow: boolean[] = Array.from({ length: 9 }, () => false);
 
     constructor() {
         this.renderTexture = null;
@@ -79,8 +78,10 @@ export class TexManager {
         this.cam?.resize(p);
     }
 
-    update(p: p5, beat: number, apcMiniMK2Manager: APCMiniMK2Manager): void {
-        const nowCameraIndex = 4;
+    update(p: p5, beat: number, midiManager: APCMiniMK2Manager): void {
+        // MIDI入力からカメラインデックスを取得
+        const nowCameraIndex = midiManager.midiInput["cameraSelect"] as number;
+
         if (nowCameraIndex !== this.cameraIndex) {
             if (!this.cam) {
                 throw new Error("Camera not initialized");
@@ -95,13 +96,9 @@ export class TexManager {
         }
         const cameraParams = this.cam.easeCamera(beat);
         this.cam.setCameraParameter(cameraParams);
-
-        for (let i in this.objectShow) {
-            this.objectShow[i] = true;
-        }
     }
 
-    draw(p: p5, beat: number): void {
+    draw(p: p5, beat: number, midiManager: APCMiniMK2Manager): void {
         const texture = this.renderTexture;
         if (!texture) {
             throw new Error("Texture not initialized");
@@ -113,32 +110,38 @@ export class TexManager {
             throw new Error("Camera not initialized");
         }
 
+        // 白塗りモードの状態を取得
+        const whiteMode = midiManager.midiInput["whiteModeEnabled"] as boolean;
+
         texture.push();
         texture.clear();
 
-        texture.ambientLight(20);
-        texture.directionalLight(0, 255, 0, -1, 0, 0);
-        texture.directionalLight(255, 255, 0, 1, 0, 0);
-        texture.directionalLight(255, 0, 0, 0, -1, 0);
-        texture.directionalLight(255, 0, 255, 0, 1, 0);
+        // 白塗りモードがOFFの時のみライティングを適用
+        if (!whiteMode) {
+            texture.ambientLight(20);
+            texture.directionalLight(0, 255, 0, -1, 0, 0);
+            texture.directionalLight(255, 255, 0, 1, 0, 0);
+            texture.directionalLight(255, 0, 0, 0, -1, 0);
+            texture.directionalLight(255, 0, 255, 0, 1, 0);
+        }
 
         texture.push();
         this.cam.drawCamera(texture);
 
         // 各オブジェクトを描画
-        if (this.objectShow[0]) this.verticalBoxes.draw(p, texture, beat);
-        if (this.objectShow[1]) this.gridBoxes.draw(p, texture, beat, this.boxTexture);
-        if (this.objectShow[2]) this.circularBoxes.draw(p, texture, beat);
-        if (this.objectShow[3]) this.spiralBoxes.draw(p, texture, beat);
-        if (this.objectShow[4]) this.groundCircle.draw(p, texture, beat);
-        if (this.objectShow[5]) this.horizontalLines.draw(p, texture, beat);
-        if (this.objectShow[6]) this.circularTorusCylinders.draw(p, texture, beat);
-        if (this.objectShow[7]) this.outerFrameBoxes.draw(p, texture, beat);
+        if (midiManager.midiInput["object00Enabled"]) this.verticalBoxes.draw(p, texture, beat, whiteMode);
+        if (midiManager.midiInput["object01Enabled"]) this.gridBoxes.draw(p, texture, beat, this.boxTexture, whiteMode);
+        if (midiManager.midiInput["object02Enabled"]) this.circularBoxes.draw(p, texture, beat, whiteMode);
+        if (midiManager.midiInput["object03Enabled"]) this.spiralBoxes.draw(p, texture, beat, whiteMode);
+        if (midiManager.midiInput["object04Enabled"]) this.groundCircle.draw(p, texture, beat, whiteMode);
+        if (midiManager.midiInput["object05Enabled"]) this.horizontalLines.draw(p, texture, beat, whiteMode);
+        if (midiManager.midiInput["object06Enabled"]) this.circularTorusCylinders.draw(p, texture, beat, whiteMode);
+        if (midiManager.midiInput["object07Enabled"]) this.outerFrameBoxes.draw(p, texture, beat, whiteMode);
 
         texture.pop(); // カメラ用のpop
 
         // 周りパート
-        if (this.objectShow[8]) this.outerFrameSphere.draw(p, texture, beat);
+        if (midiManager.midiInput["object08Enabled"]) this.outerFrameSphere.draw(p, texture, beat, whiteMode);
 
         texture.pop(); // 最外層のpop
     }

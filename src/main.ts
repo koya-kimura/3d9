@@ -54,7 +54,7 @@ const sketch = (p: p5) => {
     apcMiniMK2Manager.update(Math.floor(bpmManager.getBeat()));
     // シーンの更新と描画
     texManager.update(p, bpmManager.getBeat(), apcMiniMK2Manager);
-    texManager.draw(p, bpmManager.getBeat());
+    texManager.draw(p, bpmManager.getBeat(), apcMiniMK2Manager);
 
     uiManager.update(p, bpmManager.getBeat(), logger);
     uiManager.draw(p, font, logo, bpmManager.getBeat(), logger);

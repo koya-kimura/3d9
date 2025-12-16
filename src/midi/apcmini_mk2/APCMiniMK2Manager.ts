@@ -696,6 +696,9 @@ export class APCMiniMK2Manager extends MIDIManager {
       this.registerButtons(MIDI_BUTTON_CONFIGS);
       console.log(`📋 MIDI設定: ${MIDI_BUTTON_CONFIGS.length}件のボタンを登録しました`);
     }
+
+    // 親クラスのMIDI接続処理を実行
+    await super.init();
   }
 
   /**

@@ -14,6 +14,101 @@ import { LED_PALETTE } from "./ledPalette";
  * 必要に応じてページ・行・列を指定してボタンを登録してください。
  */
 export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
+  {
+    key: "object00Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 0, col: 0 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "object01Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 0, col: 1 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "object02Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 0, col: 2 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "object03Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 0, col: 3 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "object04Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 0, col: 4 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "object05Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 0, col: 5 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "object06Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 0, col: 6 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "object07Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 0, col: 7 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "object08Enabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 1, col: 0 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "whiteModeEnabled",
+    type: "toggle",
+    cells: [{ page: 0, row: 1, col: 1 }],
+    activeColor: LED_PALETTE.WHITE,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "cameraSelect",
+    type: "radio",
+    cells: [
+      { page: 0, row: 2, col: 0 },
+      { page: 0, row: 2, col: 1 },
+      { page: 0, row: 2, col: 2 },
+      { page: 0, row: 2, col: 3 },
+      { page: 0, row: 2, col: 4 },
+      { page: 0, row: 2, col: 5 },
+    ],
+    activeColor: LED_PALETTE.CYAN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: 4, // デフォルトはカメラ4(rotateCameraPattern)
+  },
 ];
 
 // ========================================

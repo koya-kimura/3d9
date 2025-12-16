@@ -18,6 +18,7 @@ export const LED_PALETTE = {
   BLUE: 37,
   PURPLE: 53,
   PINK: 56,
+  WHITE: 3, // ONと同じ白
 } as const;
 
 /** ページごとのLED色（LED_PALETTEを参照） */

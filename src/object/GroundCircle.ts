@@ -11,12 +11,19 @@ export class GroundCircle {
      * @param p - p5インスタンス
      * @param texture - 描画コンテキスト
      * @param beat - 現在のビート値
+     * @param whiteMode - 白塗りモード
      */
-    draw(p: p5, texture: p5.Graphics, beat: number): void {
+    draw(p: p5, texture: p5.Graphics, beat: number, whiteMode: boolean = false): void {
         texture.push();
         texture.rotateX(Math.PI / 2);
         texture.noStroke();
-        texture.fill(255, 100);
+
+        if (whiteMode) {
+            texture.fill(255);
+        } else {
+            texture.fill(255, 100);
+        }
+
         texture.ellipse(0, 0, this.CIRCLE_SIZE, this.CIRCLE_SIZE);
         texture.pop();
     }

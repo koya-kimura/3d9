@@ -19,8 +19,9 @@ export class VerticalBoxes {
      * @param p - p5インスタンス
      * @param texture - 描画コンテキスト
      * @param beat - 現在のビート値
+     * @param whiteMode - 白塗りモード
      */
-    draw(p: p5, texture: p5.Graphics, beat: number): void {
+    draw(p: p5, texture: p5.Graphics, beat: number, whiteMode: boolean = false): void {
         for (let i = 0; i < this.BOX_COUNT; i++) {
             const r = 200 * p.map(Math.pow(Math.abs(Math.sin(beat * 0.5 + i * 0.008)), 2), 0, 1, 2, 1);
             const xr = p.map(GVM.leapNoise(beat, 4, 1, Easing.easeInOutSine, i, 0), 0, 1, 0.1, 1.0) * r;
@@ -33,11 +34,18 @@ export class VerticalBoxes {
 
             texture.push();
             texture.translate(x, y, z);
-            texture.strokeWeight(0.5);
-            texture.specularMaterial(100);
             texture.rotateY(beat * UniformRandom.rand(i) * 0.01 + i * 0.1);
-            texture.stroke(255, 200);
-            texture.fill(255, 100);
+
+            if (whiteMode) {
+                texture.noStroke();
+                texture.fill(255);
+            } else {
+                texture.strokeWeight(0.5);
+                texture.specularMaterial(100);
+                texture.stroke(255, 200);
+                texture.fill(255, 100);
+            }
+
             texture.box(this.BOX_WIDTH, h, this.BOX_WIDTH);
             texture.pop();
         }

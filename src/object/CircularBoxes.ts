@@ -15,16 +15,24 @@ export class CircularBoxes {
      * @param p - p5インスタンス
      * @param texture - 描画コンテキスト
      * @param beat - 現在のビート値
+     * @param whiteMode - 白塗りモード
      */
-    draw(p: p5, texture: p5.Graphics, beat: number): void {
+    draw(p: p5, texture: p5.Graphics, beat: number, whiteMode: boolean = false): void {
         for (let i = 0; i < this.BOX_COUNT; i++) {
             const angle = (i / this.BOX_COUNT) * Math.PI * 2 + beat * 0.1 + GVM.leapRamp(beat, 32, 8, Easing.easeOutCubic) * Math.PI;
 
             texture.push();
             texture.translate(Math.cos(angle) * this.RADIUS, Math.sin(angle) * this.RADIUS, 0);
             texture.rotateY(-angle + Math.PI / 2);
-            texture.stroke(255, 150);
-            texture.fill(255, 100);
+
+            if (whiteMode) {
+                texture.noStroke();
+                texture.fill(255);
+            } else {
+                texture.stroke(255, 150);
+                texture.fill(255, 100);
+            }
+
             texture.box(this.BOX_SIZE);
             texture.pop();
         }
