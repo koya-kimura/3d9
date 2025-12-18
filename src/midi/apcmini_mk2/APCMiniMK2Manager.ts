@@ -313,7 +313,8 @@ export class APCMiniMK2Manager extends MIDIManager {
       }
 
       if (this.faderButtonMode === "random") {
-        this.faderValues[col] = UniformRandom.rand(Math.floor(beat), col) < 0.5 ? 0 : 1;
+        // ランダムモード時は1.5倍速でビートを進める
+        this.faderValues[col] = UniformRandom.rand(Math.floor(beat * 1.5), col) < 0.5 ? 0 : 1;
       } else if (this.faderButtonMode === "mute") {
         this.faderValues[col] = 0;
       }

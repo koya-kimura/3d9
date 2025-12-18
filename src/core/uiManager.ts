@@ -1,11 +1,10 @@
 import p5 from "p5";
-import { Easing } from "../utils/math/easing";
 import { Logger } from "../utils/log/logger";
 import { BaseUIDraw } from "../ui/BaseUIDraw";
-import { UIDraw02 } from "../ui/UIDraw02";
+import { UIDraw01 } from "../ui/UIDraw01";
 
 const UIDRAWERS: readonly BaseUIDraw[] = [
-    new UIDraw02(),
+    new UIDraw01(),
 ];
 
 // UIManager は単純なテキストオーバーレイの描画を担当する。
@@ -108,9 +107,9 @@ export class UIManager {
         texture.push();
         texture.clear();
 
-        // const drawer = UIDRAWERS[this.currentUiIndex];
-        // drawer.update(p, beat);
-        // drawer.draw(p, texture, font, logo, this.fps, logger, this);
+        const drawer = UIDRAWERS[this.currentUiIndex];
+        drawer.update(p, beat);
+        drawer.draw(p, texture, font, logo, this.fps, logger, this, beat);
 
         texture.pop();
     }

@@ -16,6 +16,7 @@ export abstract class BaseUIDraw {
      * @param fps - 現在のFPS
      * @param logger - ロガーインスタンス
      * @param uiManager - UIManagerインスタンス
+     * @param beat - 現在のビート
      */
     abstract draw(
         p: p5,
@@ -24,7 +25,8 @@ export abstract class BaseUIDraw {
         logo: p5.Image,
         fps: number,
         logger: Logger,
-        uiManager: UIManager
+        uiManager: UIManager,
+        beat: number
     ): void;
 
     /**

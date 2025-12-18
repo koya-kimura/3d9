@@ -38,7 +38,7 @@ const sketch = (p: p5) => {
     audioMicManager.init();
 
     // リソースの読み込み
-    font = await p.loadFont("/font/DS-DIGIB.TTF");
+    font = await p.loadFont("/font/Jost-Regular.ttf");
     logo = await p.loadImage("/image/Flow.png");
 
     effectManager.load(p, postVert, postFrag);
