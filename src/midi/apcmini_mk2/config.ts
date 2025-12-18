@@ -19,7 +19,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 0, col: 0 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -27,7 +27,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 0, col: 1 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -35,7 +35,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 0, col: 2 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -43,7 +43,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 0, col: 3 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -51,7 +51,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 0, col: 4 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -59,7 +59,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 0, col: 5 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -67,7 +67,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 0, col: 6 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -75,7 +75,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 0, col: 7 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -83,15 +83,7 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
     type: "toggle",
     cells: [{ page: 0, row: 1, col: 0 }],
     activeColor: LED_PALETTE.GREEN,
-    inactiveColor: LED_PALETTE.DIM,
-    defaultValue: false,
-  },
-  {
-    key: "whiteModeEnabled",
-    type: "toggle",
-    cells: [{ page: 0, row: 1, col: 1 }],
-    activeColor: LED_PALETTE.WHITE,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: false,
   },
   {
@@ -106,8 +98,56 @@ export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
       { page: 0, row: 2, col: 5 },
     ],
     activeColor: LED_PALETTE.CYAN,
-    inactiveColor: LED_PALETTE.DIM,
+    inactiveColor: LED_PALETTE.WHITE,
     defaultValue: 4, // デフォルトはカメラ4(rotateCameraPattern)
+  },
+  {
+    key: "cameraSmoothTransition",
+    type: "toggle",
+    cells: [{ page: 0, row: 2, col: 6 }],
+    activeColor: LED_PALETTE.YELLOW,
+    inactiveColor: LED_PALETTE.WHITE,
+    defaultValue: true, // デフォルトはスムーズ遷移ON
+  },
+  {
+    key: "bpmHalfSpeed",
+    type: "toggle",
+    cells: [{ page: 0, row: 6, col: 6 }],
+    activeColor: LED_PALETTE.BLUE,
+    inactiveColor: LED_PALETTE.WHITE,
+    defaultValue: false,
+  },
+  {
+    key: "bpmQuarterSpeed",
+    type: "momentary",
+    cells: [{ page: 0, row: 6, col: 7 }],
+    activeColor: LED_PALETTE.CYAN,
+    inactiveColor: LED_PALETTE.WHITE,
+  },
+  {
+    key: "cameraRandom",
+    type: "random",
+    cells: [{ page: 0, row: 2, col: 7 }],
+    randomTarget: "cameraSelect",
+    excludeCurrent: true,
+    speed: 1,
+    activeColor: LED_PALETTE.PURPLE,
+    inactiveColor: LED_PALETTE.WHITE,
+  },
+  {
+    key: "bpmDoubleSpeed",
+    type: "toggle",
+    cells: [{ page: 0, row: 7, col: 6 }],
+    activeColor: LED_PALETTE.RED,
+    inactiveColor: LED_PALETTE.WHITE,
+    defaultValue: false,
+  },
+  {
+    key: "bpmQuadSpeed",
+    type: "momentary",
+    cells: [{ page: 0, row: 7, col: 7 }],
+    activeColor: LED_PALETTE.PURPLE,
+    inactiveColor: LED_PALETTE.WHITE,
   },
 ];
 

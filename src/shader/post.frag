@@ -35,6 +35,11 @@ void main(void) {
 
     vec2 mainUV = vTexCoord;
 
+    // カメラシェイクエフェクト
+    if(getFaderValue(4) == 1.0){
+        mainUV = applyCameraShake(mainUV, u_beat, u_time, 0.02);
+    }
+
     // float size = 0.05;
     // mainUV += vec2(random(uv + vec2(4729.4279, 2947.2947)) * size - size * 0.5, random(uv + vec2(2947.2947, 4729.4279)) * size - size * 0.5);
     // mainUV = vec2(floor(mainUV.x * 64.0) / 64.0, floor(mainUV.y * 36.0) / 36.0);
@@ -43,8 +48,14 @@ void main(void) {
     mainUV *= (1. + length(mainUV) * 0.05) * 0.5;
     mainUV += 0.5;
 
+    if(getFaderValue(2) == 1.0){
+        mainUV = mosaic(mainUV, u_resolution, 160.0);
+    }
+
     // ランダムなラインスライス効果を適用
-    mainUV = applyRandomLineSlice(mainUV, u_beat);
+    if(getFaderValue(1) == 1.0){
+        mainUV = applyRandomLineSlice(mainUV, u_beat);
+    }
 
     vec4 mosaicTex = vec4(0.0);
     vec2 mosaicUV = vTexCoord;
@@ -61,14 +72,25 @@ void main(void) {
         col.rgb = mainCol.rgb;
     } else {
         if(gray(mainCol.rgb) > 0.2 && mainCol.a > 0.0){
-            col.rgb = vec3(1.0, 1.0, 0.0);
+            col.rgb = vec3(0.0, 0.4, 0.1);
         }
+    }
+
+    // エッジ検出エフェクト
+    if(getFaderValue(3) == 1.0){
+        col.rgb = applyEdgeDetection(u_tex, mainUV, u_resolution, 0.1, vec3(0.0, 0.4, 0.1));
     }
 
     if(abs(sin(vTexCoord.y+u_time * 0.2)) > 0.999){
         vec2 vTexCoordR = vec2(vTexCoord.x + random(vec2(vTexCoord.x+u_time, vTexCoord.y+u_time)) * 0.005, vTexCoord.y+random(vec2(vTexCoord.x+u_time,vTexCoord.y+u_time))*.005);
         mainCol.rgb = texture2D(u_tex,vTexCoordR).rgb;
     }
+
+    if(getFaderValue(5) == 1.0){
+        col.rgb = patipati(col.rgb);
+    }
+
+    col.rgb = mix(vec3(0.0), col.rgb, getFaderValue(8));
 
     vec4 uiCol = texture2D(u_uiTex, vTexCoord);
     col.rgb = mix(col.rgb, uiCol.rgb, uiCol.a);

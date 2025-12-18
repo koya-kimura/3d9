@@ -1,7 +1,7 @@
 import p5 from "p5";
 
 import { APCMiniMK2Manager } from "../midi/apcmini_mk2/apcMiniMk2Manager";
-import { Camera } from "../utils/camera/camera";
+import { Camera, cameraPatterns } from "../utils/camera/camera";
 import { VerticalBoxes } from "../object/VerticalBoxes";
 import { GridBoxes } from "../object/GridBoxes";
 import { CircularBoxes } from "../object/CircularBoxes";
@@ -79,23 +79,39 @@ export class TexManager {
     }
 
     update(p: p5, beat: number, midiManager: APCMiniMK2Manager): void {
-        // MIDI入力からカメラインデックスを取得
+        // MIDI入力からカメラインデックスと遷移モードを取得
         const nowCameraIndex = midiManager.midiInput["cameraSelect"] as number;
+        const smoothTransition = midiManager.midiInput["cameraSmoothTransition"] as boolean;
 
         if (nowCameraIndex !== this.cameraIndex) {
             if (!this.cam) {
                 throw new Error("Camera not initialized");
             }
-            this.cam.pushCamera(nowCameraIndex, beat);
+
+            if (smoothTransition) {
+                // スムーズ遷移モード（2拍で遷移）
+                this.cam.pushCamera(nowCameraIndex, beat);
+            } else {
+                // 即座に切り替えモード
+                // カメラパラメータを直接取得して設定（drawCameraは呼ばない）
+                const pattern = cameraPatterns[nowCameraIndex % cameraPatterns.length];
+                const params = typeof pattern === "function" ? pattern(beat) : pattern;
+                this.cam.setCameraParameter(params);
+                // 遷移状態をクリア（easeCameraで補間されないようにする）
+                (this.cam as any).transitionStartParams = null;
+            }
+
             this.cameraIndex = nowCameraIndex;
         }
 
-        // easeCameraの戻り値を取得してカメラパラメータを適用
-        if (!this.cam) {
-            throw new Error("Camera not initialized");
+        // スムーズ遷移モード時のみeaseCameraを適用
+        if (smoothTransition) {
+            if (!this.cam) {
+                throw new Error("Camera not initialized");
+            }
+            const cameraParams = this.cam.easeCamera(beat);
+            this.cam.setCameraParameter(cameraParams);
         }
-        const cameraParams = this.cam.easeCamera(beat);
-        this.cam.setCameraParameter(cameraParams);
     }
 
     draw(p: p5, beat: number, midiManager: APCMiniMK2Manager): void {
@@ -111,7 +127,7 @@ export class TexManager {
         }
 
         // 白塗りモードの状態を取得
-        const whiteMode = midiManager.midiInput["whiteModeEnabled"] as boolean;
+        const whiteMode = midiManager.faderValues[0] == 1.0;
 
         texture.push();
         texture.clear();

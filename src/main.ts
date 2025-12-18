@@ -28,7 +28,7 @@ const sketch = (p: p5) => {
   p.setup = async () => {
     const canvas = p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
     p.noCursor(); // カーソルを非表示にする
-    p.pixelDensity(1); // 高解像度ディスプレイ対応
+    p.pixelDensity(2); // 高解像度ディスプレイ対応
     canvas.parent("canvas-container");
 
     // 各マネージャーの初期化
@@ -52,6 +52,17 @@ const sketch = (p: p5) => {
 
     bpmManager.update();
     apcMiniMK2Manager.update(Math.floor(bpmManager.getBeat()));
+
+    // BPM速度変更の適用
+    const quadSpeed = apcMiniMK2Manager.midiInput["bpmQuadSpeed"] as boolean;
+    const doubleSpeed = apcMiniMK2Manager.midiInput["bpmDoubleSpeed"] as boolean;
+    const halfSpeed = apcMiniMK2Manager.midiInput["bpmHalfSpeed"] as boolean;
+    const quarterSpeed = apcMiniMK2Manager.midiInput["bpmQuarterSpeed"] as boolean;
+    bpmManager.setQuadSpeed(quadSpeed);
+    bpmManager.setDoubleSpeed(doubleSpeed);
+    bpmManager.setHalfSpeed(halfSpeed);
+    bpmManager.setQuarterSpeed(quarterSpeed);
+
     // シーンの更新と描画
     texManager.update(p, bpmManager.getBeat(), apcMiniMK2Manager);
     texManager.draw(p, bpmManager.getBeat(), apcMiniMK2Manager);

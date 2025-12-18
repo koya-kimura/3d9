@@ -20,6 +20,11 @@ export class BPMManager {
     private readonly TAP_HISTORY_SIZE: number = 4; // テンポ計算に使うタップ数の最大値
     private readonly TAP_TIMEOUT: number = 2000;   // 連続タップが途切れるまでのミリ秒
 
+    private doubleSpeed: boolean = false;  // 2倍速モード
+    private quadSpeed: boolean = false;    // 4倍速モード
+    private halfSpeed: boolean = false;    // 1/2倍速モード
+    private quarterSpeed: boolean = false; // 1/4倍速モード
+
     /**
      * BPMManagerクラスのコンストラクタです。
      * 初期BPMを設定し、それに基づいた1ビートあたりの時間間隔（ミリ秒）を計算します。
@@ -135,11 +140,26 @@ export class BPMManager {
      * 整数部分はこれまでに経過した総ビート数、小数部分は現在のビート内の進行度（0.0〜1.0未満）を表します。
      * この値を使用することで、ビートに同期した滑らかなアニメーション
      * （例えば、sin(beat * PI) での点滅や移動など）を実装することができます。
+     * 速度変更が有効な場合、返される値が変化します。
+     * 優先順位: quadSpeed(4倍) > doubleSpeed(2倍) > 通常(1倍) > halfSpeed(1/2倍) > quarterSpeed(1/4倍)
      *
      * @returns 現在の累積ビート数（浮動小数点数）。
      */
     public getBeat(): number {
-        return this.beatCount + (this.elapsed / this.interval);
+        const baseBeat = this.beatCount + (this.elapsed / this.interval);
+
+        // 優先順位に従って速度倍率を適用
+        if (this.quadSpeed) {
+            return baseBeat * 4;
+        } else if (this.doubleSpeed) {
+            return baseBeat * 2;
+        } else if (this.quarterSpeed) {
+            return baseBeat * 0.25;
+        } else if (this.halfSpeed) {
+            return baseBeat * 0.5;
+        }
+
+        return baseBeat;
     }
 
     /**
@@ -220,5 +240,39 @@ export class BPMManager {
 
         console.log(`Calculated new BPM: ${newBPM}`);
         this.setBPM(newBPM);
+    }
+
+    // --- 速度変更機能 ---
+
+    /**
+     * 2倍速モードを設定します。
+     * @param enabled true で2倍速、false で通常速度
+     */
+    public setDoubleSpeed(enabled: boolean): void {
+        this.doubleSpeed = enabled;
+    }
+
+    /**
+     * 4倍速モードを設定します。
+     * @param enabled true で4倍速、false で通常速度
+     */
+    public setQuadSpeed(enabled: boolean): void {
+        this.quadSpeed = enabled;
+    }
+
+    /**
+     * 1/2倍速モードを設定します。
+     * @param enabled true で1/2倍速、false で通常速度
+     */
+    public setHalfSpeed(enabled: boolean): void {
+        this.halfSpeed = enabled;
+    }
+
+    /**
+     * 1/4倍速モードを設定します。
+     * @param enabled true で1/4倍速、false で通常速度
+     */
+    public setQuarterSpeed(enabled: boolean): void {
+        this.quarterSpeed = enabled;
     }
 }
