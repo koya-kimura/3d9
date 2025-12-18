@@ -10,8 +10,8 @@ import { APCMiniMK2Manager } from "./midi/apcmini_mk2/apcMiniMk2Manager";
 import { AudioMicManager } from "./utils/audio/audioMicManager";
 
 // シェーダーをインポート（vite-plugin-glslにより文字列として読み込まれる）
-import postVert from "../public/shader/post.vert";
-import postFrag from "../public/shader/post.frag";
+import postVert from "./shader/post.vert";
+import postFrag from "./shader/post.frag";
 
 const logger = new Logger();
 const texManager = new TexManager();
